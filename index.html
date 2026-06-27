@@ -283,9 +283,20 @@
         .dashboard-table th { background-color: #F9F8F6; padding: 14px; font-weight: 700; }
         .dashboard-table td { padding: 14px; border-bottom: 1px solid rgba(62, 50, 46, 0.05); white-space: normal; word-break: break-word; }
 
+      /* Review Components - Diubah Jadi Full Width Bersih */
+        .review-input-box { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; max-width: 100%; }
+        .star-rating-row { display: flex; gap: 6px; font-size: 24px; cursor: pointer; color: #DDD; }
+        .star-rating-row span.active { color: var(--brand-amber); }
+        
         .reviews-masonry-feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         @media (max-width: 600px) { .reviews-masonry-feed { grid-template-columns: 1fr; } }
-        .review-card { background: #FAF9F6; padding: 20px; border-radius: 20px; border: 1px solid rgba(62, 50, 46, 0.05); }
+        
+        .review-card { 
+            background: oklab(97.934% 0.00027 0.00274); 
+            padding: 20px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(62, 50, 46, 0.05);
+        }
 
         /* ADMIN PANEL STYLES */
         .admin-trigger-zone { max-width: 1100px; margin: 40px auto 10px auto; padding: 0 20px; text-align: right; }
@@ -421,10 +432,29 @@
             </div>
         </div>
 
+         <!-- TESTIMONI / ULASAN (Gambar Palet Warna Sudah Dihapus Penuh) -->
         <div class="eco-card" id="ulasan-tamu">
-            <div class="card-header-title">✨ Testimoni Pelanggan</div>
-            <div class="reviews-masonry-feed" id="review-target-container"></div>
+            <div class="card-header-title">✨ Testimoni Pelanggan Resto Rasa Nusantara</div>
+            
+            <div class="review-input-box">
+                <div class="star-rating-row" id="star-selector">
+                    <span onclick="setStars(1)">★</span><span onclick="setStars(2)">★</span><span onclick="setStars(3)">★</span><span onclick="setStars(4)">★</span><span onclick="setStars(5)">★</span>
+                </div>
+                <input type="text" id="rev-name" class="input-custom" placeholder="Nama Anda" style="margin-bottom:8px;">
+                <textarea id="rev-text" class="input-custom" rows="3" placeholder="Ceritakan keseruan pengalaman kuliner nusantara Anda di sini..."></textarea>
+                <button type="button" class="btn-action-pill" onclick="submitReview()" style="background:var(--brand-olive); color:white; padding:12px; margin-top:8px; box-shadow:none;">Kirim Testimoni</button>
+            </div>
+
+            <div class="reviews-masonry-feed" id="review-target-container">
+                <div class="review-card">
+                    <div style="color:var(--brand-amber); font-size:14px; margin-bottom:6px;">★★★★★</div>
+                    <strong style="font-size:14px;">Budi Santoso</strong>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:6px;">"Rendang daging sapinya empuk sekali dan bumbunya meresap sampai ke dalam! Vibes tempatnya juga tenang dan premium setelah diredesign."</p>
+                </div>
+            </div>
         </div>
+
+    </div>
 
     </div>
 
@@ -711,6 +741,54 @@
                 container.appendChild(card);
             });
         }
+
+        // Variabel global untuk menyimpan rating bintang yang dipilih (default: 5)
+let selectedStars = 5;
+
+// Fungsi untuk mengubah warna bintang saat diklik
+function setStars(rating) {
+    selectedStars = rating;
+    const starSpans = document.querySelectorAll('#star-selector span');
+    
+    starSpans.forEach((span, index) => {
+        if (index < rating) {
+            span.classList.add('active');
+        } else {
+            span.classList.remove('active');
+        }
+    });
+}
+
+// Fungsi untuk mengirimkan testimoni baru ke sistem ulasan
+function submitReview() {
+    const nameInput = document.getElementById('rev-name');
+    const textInput = document.getElementById('rev-text');
+    
+    const name = nameInput.value.trim();
+    const text = textInput.value.trim();
+    
+    if (!name || !text) {
+        return alert("Harap isi nama dan cerita pengalaman Anda terlebih dahulu!");
+    }
+    
+    // Tambahkan ulasan baru ke bagian paling atas array
+    reviews.unshift({
+        name: name,
+        text: text,
+        stars: selectedStars
+    });
+    
+    // Simpan ke local storage dan perbarui tampilan halaman
+    saveAll();
+    renderReviews();
+    
+    // Reset form setelah berhasil dikirim
+    nameInput.value = "";
+    textInput.value = "";
+    setStars(5); // Kembalikan default ke bintang 5
+    
+    alert("Terima kasih atas testimoni Anda!");
+}
 
         // CONTROL BACKOFFICE & SECURE LOGIN SYSTEM
         function toggleAdminPanel() {
